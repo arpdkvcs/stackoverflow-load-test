@@ -12,7 +12,7 @@ import static io.gatling.javaapi.http.HttpDsl.http;
 public class SignUpAPI extends Simulation {
 
     private HttpProtocolBuilder httpProtocol = http
-            .baseUrl("localhost:3000")
+            .baseUrl("http://localhost:3000")
             .acceptHeader("application/json");
 
     private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/signup/credentials_10000.csv").circular();
