@@ -15,7 +15,7 @@ public class SignUpAPI extends Simulation {
             .baseUrl("http://localhost:3000")
             .acceptHeader("application/json");
 
-    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/signup/credentials_10000.csv").circular();
+    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/users/credentials_10000.csv").circular();
 
     private final int numberOfRecords = feeder.recordsCount();
 
