@@ -21,23 +21,19 @@ public class SignUpFrontend extends Simulation {
     private static final int MIN_WAIT = 2;
     private static final int MAX_WAIT = 5;
 
-    private ChainBuilder signUp =
-            exec(http("Main Page").get("/"))
-                    .pause(MIN_WAIT, MAX_WAIT)
-                    .feed(feeder)
-                    .exec(http("Sign up").post("/api/auth/register")
-                            .header("content-type", "application/json")
-                            .body(StringBody(
-                                    "{" +
-                                            "\"username\":\"#{USERNAME}\"," +
-                                            "\"password\":\"#{PASSWORD}\"" +
-                                        "}"
-                            )) // use method?
-                    );
-
-
     private ScenarioBuilder newUser = scenario("Register new user")
-            .exec(signUp);
+            .exec(http("Main Page").get("/"))
+            .pause(MIN_WAIT, MAX_WAIT)
+            .feed(feeder)
+            .exec(http("Sign up").post("/api/auth/register")
+                    .header("content-type", "application/json")
+                    .body(StringBody(
+                            "{" +
+                                    "\"username\":\"#{USERNAME}\"," +
+                                    "\"password\":\"#{PASSWORD}\"" +
+                                    "}"
+                    ))
+            );
     {
         setUp(newUser.injectOpen(rampUsers(numberOfRecords).during(40))
         ).protocols(httpProtocol);
