@@ -39,13 +39,17 @@ public class GeneralUse extends Simulation {
                                             "\"username\":\"#{USERNAME}\"," +
                                             "\"password\":\"#{PASSWORD}\"" +
                                             "}"
-                            ))
+                                    )
+                            )
                             .check(status().is(200))
                             .check(jmesPath("data.userid")
-                                    .saveAs("userId")))
+                                    .saveAs("userId")
+                            )
+                    )
                     .pause(MIN_WAIT, MAX_WAIT)
                     .exec(getCookieValue(CookieKey("jwt")
-                            .withSecure(true)))
+                            .withSecure(true))
+                    )
                     .exec(addCookie(Cookie("jwt", "#{jwt}")));
 
     private ChainBuilder logout =
@@ -60,7 +64,8 @@ public class GeneralUse extends Simulation {
                                         "\"title\":\"" + QUESTION_TITLE + " #{USERNAME}\"," +
                                         "\"content\":\"" + QUESTION_BODY + "\"" +
                                     "}"
-                        ))
+                                )
+                        )
                 )
                 .pause(MIN_WAIT, MAX_WAIT);
 
@@ -68,7 +73,11 @@ public class GeneralUse extends Simulation {
                 exec(http("Get all questions").get("/api/questions/all")
                         .check(jsonPath("$.data[*].id")
                                 .findRandom()
-                                .saveAs("RANDOM_QUESTION_ID")))
+                                .saveAs("RANDOM_QUESTION_ID")
+                        )
+                )
+                .exec(http("Open Question Details").get("/api/questions/#{RANDOM_QUESTION_ID}"))
+                .pause(MIN_WAIT, MAX_WAIT)
                 .exec(http("Create Answer").post("/api/answers")
                         .headers(sentHeaders)
                         .body(StringBody(
