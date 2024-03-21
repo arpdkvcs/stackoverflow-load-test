@@ -15,24 +15,31 @@ public class SignUpFrontend extends Simulation {
             .baseUrl("http://localhost:5000")
             .acceptHeader("application/json");
 
-    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/users/credentials_10000.csv").circular();
+    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/users/credentials_1000.csv").circular();
 
     private final int numberOfRecords = feeder.recordsCount();
+    private static final int MIN_WAIT = 2;
+    private static final int MAX_WAIT = 5;
 
     private ChainBuilder signUp =
             exec(http("Main Page").get("/"))
-                    .pause(2, 5)
+                    .pause(MIN_WAIT, MAX_WAIT)
                     .feed(feeder)
                     .exec(http("Sign up").post("/api/auth/register")
                             .header("content-type", "application/json")
-                            .body(StringBody("{\"username\":\"#{USERNAME}\",\"password\":\"#{PASSWORD}\"}"))
+                            .body(StringBody(
+                                    "{" +
+                                            "\"username\":\"#{USERNAME}\"," +
+                                            "\"password\":\"#{PASSWORD}\"" +
+                                        "}"
+                            )) // use method?
                     );
 
 
     private ScenarioBuilder newUser = scenario("Register new user")
             .exec(signUp);
     {
-        setUp(newUser.injectOpen(rampUsers(numberOfRecords).during(400))
+        setUp(newUser.injectOpen(rampUsers(numberOfRecords).during(40))
         ).protocols(httpProtocol);
     }
 }

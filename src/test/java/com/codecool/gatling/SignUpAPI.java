@@ -15,7 +15,7 @@ public class SignUpAPI extends Simulation {
             .baseUrl("http://localhost:3000")
             .acceptHeader("application/json");
 
-    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/users/credentials_10000.csv").circular();
+    private FeederBuilder.Batchable<String> feeder = csv("com/codecool/gatling/users/credentials_1000.csv").circular();
 
     private final int numberOfRecords = feeder.recordsCount();
 
@@ -23,14 +23,19 @@ public class SignUpAPI extends Simulation {
             feed(feeder)
                     .exec(http("Sign up").post("/api/auth/register")
                             .header("content-type", "application/json")
-                            .body(StringBody("{\"username\":\"#{USERNAME}\",\"password\":\"#{PASSWORD}\"}"))
+                            .body(StringBody(
+                                    "{" +
+                                            "\"username\":\"#{USERNAME}\"," +
+                                            "\"password\":\"#{PASSWORD}\"" +
+                                        "}"
+                            ))
                     );
 
 
     private ScenarioBuilder newUser = scenario("Register new user")
             .exec(signUp);
     {
-        setUp(newUser.injectOpen(rampUsers(numberOfRecords).during(400))
+        setUp(newUser.injectOpen(rampUsers(numberOfRecords).during(40))
         ).protocols(httpProtocol);
     }
 }
