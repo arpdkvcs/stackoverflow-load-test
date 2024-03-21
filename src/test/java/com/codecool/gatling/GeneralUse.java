@@ -2,8 +2,6 @@ package com.codecool.gatling;
 
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
-import io.gatling.jsonpath.JsonPath;
-import scopt.Check;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,6 +102,7 @@ public class GeneralUse extends Simulation {
                                         "}"
                             )
                     )
+                    .check(status().is(200))
             )
             .pause(MIN_WAIT, MAX_WAIT);
 
@@ -124,7 +123,9 @@ public class GeneralUse extends Simulation {
                             .exec(getAllQuestions)
                             .exec(openQuestionDetails)
             )
-                    .exec(search);
+                    .pause(MIN_WAIT, MAX_WAIT)
+                    .exec(search)
+                    .pause(MIN_WAIT, MAX_WAIT);
 
 
     private ScenarioBuilder postingQuestions = scenario("Post new question")
