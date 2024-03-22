@@ -17,9 +17,10 @@ public class GeneralUse extends Simulation {
     private static final String QUESTION_TITLE = "Question from ";
     private static final String QUESTION_BODY = "Question for stress testing. What do you think?";
     private static final String ANSWER = "Answer for stress testing. I don't know. Answered by ";
-
     private static final int MIN_WAIT = 1;
     private static final int MAX_WAIT = 10;
+    public static final int LOWER_BOUND_OF_USERNAME_POSTFIX = 1;
+    public static final int UPPER_BOUND_OF_USERNAME_POSTFIX = 1000;
 
     private HttpProtocolBuilder httpProtocol = http
             .baseUrl("http://localhost:3000")
@@ -29,7 +30,10 @@ public class GeneralUse extends Simulation {
 
     private Iterator<Map<String, Object>> randomSearchQueryFeeder =
             Stream.generate((Supplier<Map<String, Object>>) () -> {
-                        String randomSearchQuery = String.valueOf(ThreadLocalRandom.current().nextInt(1, 1001));
+                        String randomSearchQuery = String.valueOf(
+                                ThreadLocalRandom.current()
+                                        .nextInt(LOWER_BOUND_OF_USERNAME_POSTFIX, UPPER_BOUND_OF_USERNAME_POSTFIX + 1)
+                        );
                         return Map.of("query", randomSearchQuery);
                     }
             ).iterator();
@@ -40,25 +44,25 @@ public class GeneralUse extends Simulation {
 
     private ChainBuilder login =
             feed(userFeeder)
-            .exec(http("LogIn").post("/api/auth/login")
-                    .headers(sentHeaders)
-                    .body(StringBody(
-                            "{" +
-                                    "\"username\":\"#{USERNAME}\"," +
-                                    "\"password\":\"#{PASSWORD}\"" +
-                                "}"
+                    .exec(http("LogIn").post("/api/auth/login")
+                            .headers(sentHeaders)
+                            .body(StringBody(
+                                    "{" +
+                                            "\"username\":\"#{USERNAME}\"," +
+                                            "\"password\":\"#{PASSWORD}\"" +
+                                        "}"
+                                    )
+                            )
+                            .check(status().is(200))
+                            .check(jmesPath("data.userid")
+                                    .saveAs("userId")
                             )
                     )
-                    .check(status().is(200))
-                    .check(jmesPath("data.userid")
-                            .saveAs("userId")
+                    .exec(getCookieValue(CookieKey("jwt")
+                            .withSecure(true))
                     )
-            )
-            .exec(getCookieValue(CookieKey("jwt")
-                    .withSecure(true))
-            )
-            .exec(addCookie(Cookie("jwt", "#{jwt}")))
-            .pause(MIN_WAIT, MAX_WAIT);
+                    .exec(addCookie(Cookie("jwt", "#{jwt}")))
+                    .pause(MIN_WAIT, MAX_WAIT);
 
     private ChainBuilder logout =
             exec(http("LogOut").post("/api/auth/logout"));
@@ -95,11 +99,11 @@ public class GeneralUse extends Simulation {
             exec(http("Create Answer").post("/api/answers")
                     .headers(sentHeaders)
                     .body(StringBody(
-                                    "{" +
-                                            "\"userId\":\"#{userId}\"," +
-                                            "\"questionId\":\"#{RANDOM_QUESTION_ID}\"," +
-                                            "\"content\":\"" + ANSWER + " #{USERNAME}\"" +
-                                        "}"
+                            "{" +
+                                    "\"userId\":\"#{userId}\"," +
+                                    "\"questionId\":\"#{RANDOM_QUESTION_ID}\"," +
+                                    "\"content\":\"" + ANSWER + " #{USERNAME}\"" +
+                                "}"
                             )
                     )
                     .check(status().is(200))
@@ -122,7 +126,7 @@ public class GeneralUse extends Simulation {
                     pace(MIN_WAIT, MAX_WAIT)
                             .exec(getAllQuestions)
                             .exec(openQuestionDetails)
-            )
+                    )
                     .pause(MIN_WAIT, MAX_WAIT)
                     .exec(search)
                     .pause(MIN_WAIT, MAX_WAIT);
