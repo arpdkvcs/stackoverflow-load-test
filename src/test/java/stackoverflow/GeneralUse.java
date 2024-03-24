@@ -80,6 +80,18 @@ public class GeneralUse extends Simulation {
                                 "}"))
                     .check(status().is(200)));
 
+    public static final ChainBuilder DELETE_A_QUESTION =
+            doIf(session -> session.contains("RANDOM_QUESTION_ID"))
+                    .then(exec(http("Delete Question").delete("/api/questions/#{RANDOM_QUESTION_ID}")
+                            .check(status().is(200))));
+
+    public static final ChainBuilder GET_USER_QUESTIONS =
+            exec(http("Get User Questions").get("/api/questions/user/#{userId}")
+                    .check(jsonPath("$.data[*].id")
+                            .findRandom()
+                            .saveAs("RANDOM_QUESTION_ID"))
+                    .check(status().is(200)));
+
     private static final ChainBuilder GET_ALL_QUESTIONS =
             exec(http("Get all questions").get("/api/questions/all")
                     .check(jsonPath("$.data[*].id")
@@ -108,29 +120,50 @@ public class GeneralUse extends Simulation {
     private static final ScenarioBuilder POST_NEW_QUESTION = scenario("Post new question")
             .exec(LOGIN)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(CREATE_QUESTION)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(LOGOUT);
 
     private static final ScenarioBuilder ANSWER_A_QUESTION = scenario("Answer a question")
             .exec(LOGIN)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(BROWSE_ALL_QUESTIONS)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(SEARCH)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(OPEN_A_QUESTIONS_DETAILS)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(CREATE_ANSWER)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(LOGOUT);
 
     private static final ScenarioBuilder BROWSE_CONTENT = scenario("Browse content")
             .exec(BROWSE_ALL_QUESTIONS)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(SEARCH)
             .pause(MIN_WAIT, MAX_WAIT)
+
             .exec(OPEN_A_QUESTIONS_DETAILS);
+
+    public static final ScenarioBuilder DELETE_SOME_USER_QUESTION = scenario("Delete user's question")
+            .exec(LOGIN)
+            .pause(MIN_WAIT, MAX_WAIT)
+
+            .exec(GET_USER_QUESTIONS)
+            .pause(MIN_WAIT, MAX_WAIT)
+
+            .exec(DELETE_A_QUESTION)
+            .pause(MIN_WAIT, MAX_WAIT)
+
+            .exec(LOGOUT);
 
     {
         setUp(
@@ -144,7 +177,10 @@ public class GeneralUse extends Simulation {
                     rampUsersPerSec(1).to(10).during(40).randomized()),
                 BROWSE_CONTENT.injectOpen(
                     nothingFor(15),
-                    rampUsersPerSec(5).to(10).during(80).randomized())
+                    rampUsersPerSec(5).to(10).during(80).randomized()),
+                DELETE_SOME_USER_QUESTION.injectOpen(
+                    nothingFor(30),
+                    rampUsersPerSec(1).to(3).during(40).randomized())
         ).protocols(HTTP_PROTOCOL);
     }
 }
