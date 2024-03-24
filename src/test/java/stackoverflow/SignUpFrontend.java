@@ -9,12 +9,14 @@ import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.http;
 
 public class SignUpFrontend extends Simulation {
+    public static final String DOMAIN = "localhost:5000";
+    public static final String CSV_FILENAME = "credentials_1000.csv";
 
     private HttpProtocolBuilder httpProtocol = http
-            .baseUrl("http://localhost:5000")
+            .baseUrl("http://" + DOMAIN)
             .acceptHeader("application/json");
 
-    private FeederBuilder.Batchable<String> feeder = csv("users/credentials_1000.csv").circular();
+    private FeederBuilder.Batchable<String> feeder = csv("users/" + CSV_FILENAME).circular();
 
     private final int numberOfRecords = feeder.recordsCount();
     private static final int MIN_WAIT = 2;
