@@ -14,6 +14,11 @@ import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.*;
 
 public class GeneralUse extends Simulation {
+    public static final String DOMAIN = "localhost:3000";
+    public static final HttpProtocolBuilder HTTP_PROTOCOL = http.baseUrl("http://" + DOMAIN);
+    private Map<String, String> sentHeaders = new HashMap<>() {{
+        put("content-type", "application/json");
+    }};
     private static final String QUESTION_TITLE = "Question from ";
     private static final String QUESTION_BODY = "Question for stress testing. What do you think?";
     private static final String ANSWER = "Answer for stress testing. I don't know. Answered by ";
@@ -21,10 +26,6 @@ public class GeneralUse extends Simulation {
     private static final int MAX_WAIT = 10;
     public static final int LOWER_BOUND_OF_USERNAME_POSTFIX = 1;
     public static final int UPPER_BOUND_OF_USERNAME_POSTFIX = 1000;
-
-    private HttpProtocolBuilder httpProtocol = http
-            .baseUrl("http://localhost:3000")
-            .acceptHeader("application/json");
 
     private FeederBuilder.Batchable<String> userFeeder = csv("com/codecool/gatling/users/credentials_1000.csv").random();
 
@@ -38,9 +39,6 @@ public class GeneralUse extends Simulation {
                     }
             ).iterator();
 
-    private Map<String, String> sentHeaders = new HashMap<>() {{
-        put("content-type", "application/json");
-    }};
 
     private ChainBuilder login =
             feed(userFeeder)
@@ -156,6 +154,6 @@ public class GeneralUse extends Simulation {
                     nothingFor(15),
                     rampUsersPerSec(5).to(10).during(80).randomized()
                 )
-        ).protocols(httpProtocol);
+        ).protocols(HTTP_PROTOCOL);
     }
 }
