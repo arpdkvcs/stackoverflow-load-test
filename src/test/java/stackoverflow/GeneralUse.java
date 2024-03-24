@@ -169,18 +169,18 @@ public class GeneralUse extends Simulation {
         setUp(
                 POST_NEW_QUESTION.injectOpen(
                     atOnceUsers(2),
-                    rampUsersPerSec(1).to(3).during(30).randomized()),
+                    rampUsersPerSec(1).to(2).during(30).randomized()),
                 ANSWER_A_QUESTION.injectOpen(
                     nothingFor(5),
                     atOnceUsers(10),
                     nothingFor(2),
-                    rampUsersPerSec(1).to(7).during(40).randomized()),
+                    rampUsersPerSec(1).to(4).during(40).randomized()),
                 BROWSE_CONTENT.injectOpen(
                     nothingFor(15),
-                    rampUsersPerSec(5).to(10).during(80).randomized()),
+                    rampUsersPerSec(3).to(8).during(80).randomized()),
                 DELETE_SOME_USER_QUESTION.injectOpen(
                     nothingFor(30),
-                    rampUsersPerSec(1).to(3).during(40).randomized())
+                    rampUsersPerSec(1).to(2).during(40).randomized())
         ).protocols(HTTP_PROTOCOL);
     }
 }
