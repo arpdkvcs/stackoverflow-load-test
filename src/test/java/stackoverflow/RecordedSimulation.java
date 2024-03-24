@@ -1,15 +1,10 @@
-package com.codecool.gatling;
-
-import java.time.Duration;
-import java.util.*;
+package stackoverflow;
 
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.*;
-import io.gatling.javaapi.jdbc.*;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.*;
-import static io.gatling.javaapi.jdbc.JdbcDsl.*;
 
 public class RecordedSimulation extends Simulation {
 
@@ -27,12 +22,12 @@ public class RecordedSimulation extends Simulation {
             pause(5),
             http("Sign up")
                 .post("/api/auth/register")
-                .body(RawFileBody("com/codecool/gatling/recordedsimulation/0003_request.json"))
+                .body(RawFileBody("recordedsimulation/0003_request.json"))
                     .header("content-type", "application/json"),
             pause(5),
             http("Log in")
                 .post("/api/auth/login")
-                .body(RawFileBody("com/codecool/gatling/recordedsimulation/0004_request.json"))
+                .body(RawFileBody("recordedsimulation/0004_request.json"))
                     .header("content-type", "application/json")
             .resources(
                     http("All questions")

@@ -1,4 +1,4 @@
-package com.codecool.gatling;
+package stackoverflow;
 
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
@@ -28,7 +28,7 @@ public class GeneralUse extends Simulation {
     public static final int LOWER_BOUND_OF_USERNAME_POSTFIX = 1;
     public static final int UPPER_BOUND_OF_USERNAME_POSTFIX = 1000;
 
-    private static final FeederBuilder<String> USER_FEEDER = csv("com/codecool/gatling/users/" + CSV_FILENAME).random();
+    private static final FeederBuilder<String> USER_FEEDER = csv("users/" + CSV_FILENAME).random();
 
     private static final Iterator<Map<String, Object>> RANDOM_SEARCH_QUERY_FEEDER =
             Stream.generate((Supplier<Map<String, Object>>) () -> {
