@@ -5,7 +5,7 @@
 
 <div>
 
-<h3 align="center">Load testing [a very simple site][System-Under-Test-url] with Gatling</h3>
+<h3 align="center">Load testing a very simple site with Gatling</h3>
 
   <p align="center">
     Gatling load testing scenarios written in Java language and run against a system under test, which is a very simple stack overflow like site
@@ -103,6 +103,7 @@ DON'T RUN BOT `SignUpFrontend` AND `SignUpAPI` UNLESS YOU REBUILD THE WHOLE DATA
 
 <!-- CONTACT -->
 ## Contact
+[LinkedIn][Linkedin-url]
 
 Project Link: [https://github.com/arpdkvcs/stackoverflow-load-test](https://github.com/arpdkvcs/stackoverflow-load-test)
 
